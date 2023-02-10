@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from "express";
 
 const patientsRouter = express.Router();
@@ -8,8 +9,16 @@ patientsRouter.get("/", (_req, res) => {
   res.send(patientsService.getNonSensitiveEntries());
 });
 
-patientsRouter.post("/", (_req, res) => {
-  res.send("Saving a diagnosis!");
+patientsRouter.post("/", (req, res) => {
+  const { name, dateOfBirth, ssn, gender, occupation } = req.body;
+  const addedEntry = patientsService.addPatients({
+    name,
+    dateOfBirth,
+    ssn,
+    gender,
+    occupation,
+  });
+  res.send(addedEntry);
 });
 
 export default patientsRouter;
