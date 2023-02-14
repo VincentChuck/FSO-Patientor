@@ -1,22 +1,23 @@
-import React from "react";
-import axios from "axios";
-import { Box, Table, Button, TableHead, Typography } from "@material-ui/core";
+import { useState } from "react";
+import { Box, Table, Button, TableHead, Typography, TableCell, TableRow, TableBody } from '@mui/material';
+import axios from 'axios';
 
-import { PatientFormValues } from "../AddPatientModal/AddPatientForm";
+import { PatientFormValues, Patient } from "../../types";
 import AddPatientModal from "../AddPatientModal";
-import { Patient } from "../types";
-import { apiBaseUrl } from "../constants";
-import HealthRatingBar from "../components/HealthRatingBar";
-import { useStateValue } from "../state";
-import { TableCell } from "@material-ui/core";
-import { TableRow } from "@material-ui/core";
-import { TableBody } from "@material-ui/core";
 
-const PatientListPage = () => {
-  const [{ patients }, dispatch] = useStateValue();
+import HealthRatingBar from "../HealthRatingBar";
 
-  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string>();
+import patientService from "../../services/patients";
+
+interface Props {
+  patients : Patient[]
+  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>
+}
+
+const PatientListPage = ({ patients, setPatients } : Props ) => {
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
 
   const openModal = (): void => setModalOpen(true);
 
@@ -27,16 +28,18 @@ const PatientListPage = () => {
 
   const submitNewPatient = async (values: PatientFormValues) => {
     try {
-      const { data: newPatient } = await axios.post<Patient>(
-        `${apiBaseUrl}/patients`,
-        values
-      );
-      dispatch({ type: "ADD_PATIENT", payload: newPatient });
-      closeModal();
+      const patient = await patientService.create(values);
+      setPatients(patients.concat(patient));
+      setModalOpen(false);
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
-        console.error(e?.response?.data || "Unrecognized axios error");
-        setError(String(e?.response?.data?.error) || "Unrecognized axios error");
+        if (e?.response?.data && typeof e?.response?.data === "string") {
+          const message = e.response.data.replace('Something went wrong. Error: ', '');
+          console.error(message);
+          setError(message);
+        } else {
+          setError("Unrecognized axios error");
+        }
       } else {
         console.error("Unknown error", e);
         setError("Unknown error");

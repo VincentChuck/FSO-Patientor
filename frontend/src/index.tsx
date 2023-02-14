@@ -1,11 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import { reducer, StateProvider } from "./state";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 
-ReactDOM.render(
-  <StateProvider reducer={reducer}>
-    <App />
-  </StateProvider>,
-  document.getElementById('root')
-);
+import App from './App'
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<App />)
