@@ -1,5 +1,5 @@
 import { Patient } from "./../types";
-import { Typography } from "@mui/material";
+import { Typography, List, ListItem, ListItemText } from "@mui/material";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import { useEffect, useState } from "react";
@@ -32,6 +32,27 @@ const PatientPage = ({ patientID }: Props) => {
         <Typography variant="body1">ssn: {patient.ssn}</Typography>
       )}
       <Typography variant="body1">occupation: {patient.occupation}</Typography>
+      <Typography variant="h5" style={{ marginBottom: "0.5em" }}>
+        entries
+      </Typography>
+      {patient.entries.map((entry) => (
+        <div key={entry.id}>
+          <Typography variant="body1">
+            {entry.date} <i>{entry.description}</i>
+          </Typography>
+          {entry.diagnosisCodes && (
+            <List sx={{ listStyleType: "disc", pl: 4 }}>
+              {entry.diagnosisCodes.map((code) => (
+                <ListItem key={code} sx={{ display: "list-item", p: 0 }}>
+                  <ListItemText
+                    primary={<Typography variant="body1">{code}</Typography>}
+                  ></ListItemText>
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </div>
+      ))}
     </div>
   ) : (
     <div>loading...</div>
