@@ -16,19 +16,17 @@ export const toNewPatientEntry = (object: unknown): NewPatient => {
 
   if (
     "name" in object &&
-    "dateOfBirth" in object &&
     "ssn" in object &&
-    "gender" in object &&
+    "dateOfBirth" in object &&
     "occupation" in object &&
-    "entries" in object
+    "gender" in object
   ) {
     const newEntry: NewPatient = {
       name: parseName(object.name),
-      dateOfBirth: parseDate(object.dateOfBirth),
       ssn: parseSsn(object.ssn),
-      gender: parseGender(object.gender),
+      dateOfBirth: parseDate(object.dateOfBirth),
       occupation: parseOccupation(object.occupation),
-      entries: parseEntries(object.entries),
+      gender: parseGender(object.gender),
     };
     return newEntry;
   }
@@ -40,7 +38,7 @@ const isString = (text: unknown): text is string => {
 };
 
 const parseName = (name: unknown): string => {
-  if (!isString(name)) {
+  if (!name || !isString(name)) {
     throw new Error("Incorrect or missing name");
   }
   return name;
@@ -51,14 +49,14 @@ const isDate = (date: string): boolean => {
 };
 
 const parseDate = (date: unknown): string => {
-  if (!isString(date) || !isDate(date)) {
+  if (!date || !isString(date) || !isDate(date)) {
     throw new Error("Incorrect or missing date: " + date);
   }
   return date;
 };
 
 const parseSsn = (ssn: unknown): string => {
-  if (!isString(ssn)) {
+  if (!ssn || !isString(ssn)) {
     throw new Error("Incorrect or missing ssn: " + ssn);
   }
   return ssn;
@@ -78,7 +76,7 @@ const parseGender = (gender: unknown): Gender => {
 };
 
 const parseOccupation = (occ: unknown): string => {
-  if (!isString(occ)) {
+  if (!occ || !isString(occ)) {
     throw new Error("Incorrect or missing occupation: " + occ);
   }
   return occ;
@@ -94,7 +92,7 @@ const baseEntryCheck = (entry: object): boolean => {
 };
 
 const parseString = (object: unknown, type: string): string => {
-  if (!isString(object)) {
+  if (!object || !isString(object)) {
     throw new Error("Incorrect or missing " + type);
   }
   return object;
@@ -114,7 +112,7 @@ const isHealthCheckRating = (rating: number): rating is HealthCheckRating => {
 };
 
 const parseHealthCheckRating = (rating: unknown): number => {
-  if (typeof rating !== "number" || isHealthCheckRating(rating)) {
+  if (!!rating || typeof rating !== "number" || isHealthCheckRating(rating)) {
     throw new Error("Incorrect or missing health check rating: " + rating);
   }
   return rating;
@@ -250,15 +248,4 @@ export const parseEntry = (entry: unknown): Entry => {
     default:
       throw new Error("Incorrect entry type: " + entry);
   }
-};
-
-const parseEntries = (entries: unknown): Entry[] => {
-  if (!entries || !Array.isArray(entries)) {
-    throw new Error("Incorrect or missing entries" + entries);
-  }
-  const parsedEntries: Entry[] = [];
-  entries.forEach((entry) => {
-    parsedEntries.push(parseEntry(entry));
-  });
-  return parsedEntries;
 };

@@ -56,16 +56,16 @@ export type Entry =
 export interface Patient {
   id: string;
   name: string;
-  dateOfBirth: string;
   ssn: string;
-  gender: Gender;
+  dateOfBirth: string;
   occupation: string;
+  gender: Gender;
   entries: Entry[];
 }
 
 export type NonSensitivePatient = Omit<Patient, "ssn" | "entries">;
 
-export type NewPatient = Omit<Patient, "id">;
+export type NewPatient = Omit<Patient, "id" | "entries">;
 
 // Define special omit for unions
 type UnionOmit<T, K extends string | number | symbol> = T extends unknown
