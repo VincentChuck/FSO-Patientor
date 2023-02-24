@@ -6,9 +6,10 @@ import {
   HealthCheckEntry,
   HospitalEntry,
   OccupationalHealthcareEntry,
+  Diagnosis,
 } from "./types";
 
-const toNewPatientEntry = (object: unknown): NewPatient => {
+export const toNewPatientEntry = (object: unknown): NewPatient => {
   if (!object || typeof object !== "object") {
     throw new Error("Incorrect or missing data");
   }
@@ -99,6 +100,15 @@ const parseString = (object: unknown, type: string): string => {
   return object;
 };
 
+const parseDiagnosisCodes = (object: unknown): Array<Diagnosis["code"]> => {
+  if (!object || typeof object !== "object" || !("diagnosisCodes" in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnosis["code"]>;
+  }
+
+  return object.diagnosisCodes as Array<Diagnosis["code"]>;
+};
+
 const isHealthCheckRating = (rating: number): rating is HealthCheckRating => {
   return Object.values(HealthCheckRating).includes(rating);
 };
@@ -128,6 +138,9 @@ const parseHealthCheckEntry = (entry: unknown): HealthCheckEntry => {
     specialist: parseString(entry.specialist, "specialist"),
     healthCheckRating: parseHealthCheckRating(entry.healthCheckRating),
   };
+  if ("diagnosisCodes" in entry) {
+    parsedEntry.diagnosisCodes = parseDiagnosisCodes(entry.diagnosisCodes);
+  }
   return parsedEntry;
 };
 
@@ -163,6 +176,9 @@ const parseHospitalEntry = (entry: unknown): HospitalEntry => {
     specialist: parseString(entry.specialist, "specialist"),
     discharge: parseDischarge(entry.discharge),
   };
+  if ("diagnosisCodes" in entry) {
+    parsedEntry.diagnosisCodes = parseDiagnosisCodes(entry.diagnosisCodes);
+  }
   if ("employerName" in entry) {
     parsedEntry.employerName = parseString(entry.employerName, "employer name");
   }
@@ -211,13 +227,16 @@ const parseOccupationalHealthcareEntry = (
     specialist: parseString(entry.specialist, "specialist"),
     employerName: parseString(entry.employerName, "employer name"),
   };
+  if ("diagnosisCodes" in entry) {
+    parsedEntry.diagnosisCodes = parseDiagnosisCodes(entry.diagnosisCodes);
+  }
   if ("sickLeave" in entry) {
     parsedEntry.sickLeave = parseSickLeave(entry.sickLeave);
   }
   return parsedEntry;
 };
 
-const parseEntry = (entry: unknown): Entry => {
+export const parseEntry = (entry: unknown): Entry => {
   if (!entry || typeof entry !== "object" || !("type" in entry)) {
     throw new Error("Incorrect or missing entries: " + entry);
   }
@@ -243,5 +262,3 @@ const parseEntries = (entries: unknown): Entry[] => {
   });
   return parsedEntries;
 };
-
-export default toNewPatientEntry;
