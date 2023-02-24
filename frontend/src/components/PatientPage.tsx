@@ -23,18 +23,13 @@ interface Props {
 
 const PatientPage = ({ patientID, diagnoses }: Props) => {
   const [patient, setPatient] = useState<Patient>();
-  const [entries, setEntries] = useState<Entry[]>();
+  const entries: Entry[] = !!patient ? patient.entries : [];
 
   useEffect(() => {
-    patientService
-      .getPatient(patientID)
-      .then((response) => setPatient(response))
-      .then(() => {
-        if (!!patient) {
-          setEntries(patient.entries);
-        }
-      });
-  }, [patient, patientID]);
+    patientService.getPatient(patientID).then((response) => {
+      setPatient(response);
+    });
+  }, [patientID]);
 
   const findDiagnosisName = (code: string): string | undefined => {
     const diagnosis = diagnoses.find((diagnosis) => diagnosis.code === code);
@@ -75,7 +70,14 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
   );
 
   const ShowHealthcheckEntry = ({ entry }: { entry: HealthCheckEntry }) => (
-    <div>
+    <div
+      style={{
+        border: "1px solid black",
+        borderRadius: "5px",
+        padding: "5px",
+        marginBottom: "10px",
+      }}
+    >
       <Typography variant="body1">
         {entry.date} <FavoriteIcon />
       </Typography>
@@ -95,7 +97,14 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
   );
 
   const ShowHospitalEntry = ({ entry }: { entry: HospitalEntry }) => (
-    <div>
+    <div
+      style={{
+        border: "1px solid black",
+        borderRadius: "5px",
+        padding: "5px",
+        marginBottom: "10px",
+      }}
+    >
       <Typography variant="body1">
         {entry.date} <MedicalServicesIcon />
       </Typography>
@@ -120,7 +129,14 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
   }: {
     entry: OccupationalHealthcareEntry;
   }) => (
-    <div>
+    <div
+      style={{
+        border: "1px solid black",
+        borderRadius: "5px",
+        padding: "5px",
+        marginBottom: "10px",
+      }}
+    >
       <Typography variant="body1">
         {entry.date} <WorkIcon /> {entry.employerName}
       </Typography>
@@ -153,7 +169,7 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
       )}
       <Typography variant="body1">occupation: {patient.occupation}</Typography>
       {entries && entries.length > 0 && (
-        <Typography variant="h5" style={{ margin: "0.5em" }}>
+        <Typography variant="h5" style={{ margin: "0.5em auto" }}>
           entries
         </Typography>
       )}
