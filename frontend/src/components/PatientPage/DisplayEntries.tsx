@@ -1,36 +1,22 @@
 import {
-  Diagnosis,
-  Patient,
   Entry,
   HealthCheckRating,
   HealthCheckEntry,
   HospitalEntry,
   OccupationalHealthcareEntry,
-} from "./../types";
+  Diagnosis,
+} from "../../types";
 import { Typography, List, ListItem, ListItemText } from "@mui/material";
-import MaleIcon from "@mui/icons-material/Male";
-import FemaleIcon from "@mui/icons-material/Female";
 import WorkIcon from "@mui/icons-material/Work";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
-import { useEffect, useState } from "react";
-import patientService from "../services/patients";
 
 interface Props {
-  patientID: string;
+  entries: Entry[];
   diagnoses: Diagnosis[];
 }
 
-const PatientPage = ({ patientID, diagnoses }: Props) => {
-  const [patient, setPatient] = useState<Patient>();
-  const entries: Entry[] = !!patient ? patient.entries : [];
-
-  useEffect(() => {
-    patientService.getPatient(patientID).then((response) => {
-      setPatient(response);
-    });
-  }, [patientID]);
-
+const DisplayEntries = ({ entries, diagnoses }: Props) => {
   const findDiagnosisName = (code: string): string | undefined => {
     const diagnosis = diagnoses.find((diagnosis) => diagnosis.code === code);
     if (diagnosis) {
@@ -79,12 +65,14 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
       }}
     >
       <Typography variant="body1">
-        {entry.date} <FavoriteIcon />
+        {entry.date} <FavoriteIcon /> Health Check
       </Typography>
       <Typography variant="body1" sx={{ fontStyle: "italic" }}>
         {entry.description}
       </Typography>
-      {entry.diagnosisCodes && Diagnoses(entry.diagnosisCodes)}
+      {entry.diagnosisCodes &&
+        entry.diagnosisCodes.length > 0 &&
+        Diagnoses(entry.diagnosisCodes)}
       <Typography variant="body1">diagnosed by {entry.specialist}</Typography>
       <Typography variant="body1">
         {`Health check rating: ${
@@ -106,12 +94,14 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
       }}
     >
       <Typography variant="body1">
-        {entry.date} <MedicalServicesIcon />
+        {entry.date} <MedicalServicesIcon /> Hospital
       </Typography>
       <Typography variant="body1" sx={{ fontStyle: "italic" }}>
         {entry.description}
       </Typography>
-      {entry.diagnosisCodes && Diagnoses(entry.diagnosisCodes)}
+      {entry.diagnosisCodes &&
+        entry.diagnosisCodes.length > 0 &&
+        Diagnoses(entry.diagnosisCodes)}
       <Typography variant="body1">diagnosed by {entry.specialist}</Typography>
       {entry.employerName && (
         <Typography variant="body1">
@@ -138,12 +128,15 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
       }}
     >
       <Typography variant="body1">
-        {entry.date} <WorkIcon /> {entry.employerName}
+        {entry.date} <WorkIcon /> Occupational Healthcare by:{" "}
+        {entry.employerName}
       </Typography>
       <Typography variant="body1" sx={{ fontStyle: "italic" }}>
         {entry.description}
       </Typography>
-      {entry.diagnosisCodes && Diagnoses(entry.diagnosisCodes)}
+      {entry.diagnosisCodes &&
+        entry.diagnosisCodes.length > 0 &&
+        Diagnoses(entry.diagnosisCodes)}
       <Typography variant="body1">Diagnosed by {entry.specialist}</Typography>
       {entry.sickLeave && (
         <Typography variant="body1">
@@ -153,34 +146,19 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
     </div>
   );
 
-  return patient ? (
+  return (
     <div>
-      <Typography variant="h4" style={{ marginBottom: "0.5em" }}>
-        {patient.name}{" "}
-        {patient.gender === "male" ? <MaleIcon /> : <FemaleIcon />}
-      </Typography>
-      {patient.dateOfBirth && (
-        <Typography variant="body1">
-          date of birth: {patient.dateOfBirth}
-        </Typography>
-      )}
-      {patient.ssn && (
-        <Typography variant="body1">ssn: {patient.ssn}</Typography>
-      )}
-      <Typography variant="body1">occupation: {patient.occupation}</Typography>
       {entries && entries.length > 0 && (
         <Typography variant="h5" style={{ margin: "0.5em auto" }}>
           entries
         </Typography>
       )}
       {entries &&
-        patient.entries.map((entry: Entry) => (
+        entries.map((entry: Entry) => (
           <EntryDetails entry={entry} key={entry.id} />
         ))}
     </div>
-  ) : (
-    <div>loading...</div>
   );
 };
 
-export default PatientPage;
+export default DisplayEntries;

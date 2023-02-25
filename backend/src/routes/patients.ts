@@ -1,5 +1,5 @@
 import express from "express";
-import { toNewPatientEntry, parseEntry } from "../utils";
+import { toNewPatientEntry, parseNewEntry } from "../utils";
 import patientsService from "../services/patientsService";
 
 const patientsRouter = express.Router();
@@ -23,7 +23,7 @@ patientsRouter.post("/:id/entries", (req, res) => {
     if (!patient) {
       return res.sendStatus(404);
     }
-    const newEntry = parseEntry(req.body);
+    const newEntry = parseNewEntry(req.body);
     const addedEntry = patientsService.addEntry(newEntry, patient);
     return res.status(200).json(addedEntry);
   } catch (error: unknown) {
