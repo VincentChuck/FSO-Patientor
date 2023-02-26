@@ -42,17 +42,28 @@ const DisplayEntries = ({ entries, diagnoses }: Props) => {
     }
   };
 
-  const Diagnoses = (codes: string[]) => (
-    <List sx={{ listStyleType: "disc", pl: 4 }}>
-      {codes.map((code: string) => {
-        const diagnosisName = findDiagnosisName(code);
-        return (
-          <ListItem key={code} sx={{ display: "list-item", p: 0 }}>
-            <ListItemText primary={`${code} ${diagnosisName}`}></ListItemText>
-          </ListItem>
-        );
-      })}
-    </List>
+  const Diagnoses = ({ codes }: { codes: string[] }) => (
+    <div style={{ marginTop: "10px" }}>
+      <List
+        sx={{ listStyleType: "circle", width: "100%" }}
+        subheader={<Typography variant="body1">Diagnoses:</Typography>}
+      >
+        {codes.map((code: string) => {
+          const diagnosisName = findDiagnosisName(code);
+          return (
+            <ListItem
+              key={code}
+              sx={{ display: "list-item", p: "0", ml: "20px" }}
+            >
+              <ListItemText
+                primary={`${code}`}
+                secondary={`${diagnosisName}`}
+              ></ListItemText>
+            </ListItem>
+          );
+        })}
+      </List>
+    </div>
   );
 
   const ShowHealthcheckEntry = ({ entry }: { entry: HealthCheckEntry }) => (
@@ -70,9 +81,9 @@ const DisplayEntries = ({ entries, diagnoses }: Props) => {
       <Typography variant="body1" sx={{ fontStyle: "italic" }}>
         {entry.description}
       </Typography>
-      {entry.diagnosisCodes &&
-        entry.diagnosisCodes.length > 0 &&
-        Diagnoses(entry.diagnosisCodes)}
+      {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+        <Diagnoses codes={entry.diagnosisCodes} />
+      )}
       <Typography variant="body1">diagnosed by {entry.specialist}</Typography>
       <Typography variant="body1">
         {`Health check rating: ${
@@ -99,9 +110,9 @@ const DisplayEntries = ({ entries, diagnoses }: Props) => {
       <Typography variant="body1" sx={{ fontStyle: "italic" }}>
         {entry.description}
       </Typography>
-      {entry.diagnosisCodes &&
-        entry.diagnosisCodes.length > 0 &&
-        Diagnoses(entry.diagnosisCodes)}
+      {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+        <Diagnoses codes={entry.diagnosisCodes} />
+      )}
       <Typography variant="body1">diagnosed by {entry.specialist}</Typography>
       {entry.employerName && (
         <Typography variant="body1">
@@ -134,9 +145,9 @@ const DisplayEntries = ({ entries, diagnoses }: Props) => {
       <Typography variant="body1" sx={{ fontStyle: "italic" }}>
         {entry.description}
       </Typography>
-      {entry.diagnosisCodes &&
-        entry.diagnosisCodes.length > 0 &&
-        Diagnoses(entry.diagnosisCodes)}
+      {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+        <Diagnoses codes={entry.diagnosisCodes} />
+      )}
       <Typography variant="body1">Diagnosed by {entry.specialist}</Typography>
       {entry.sickLeave && (
         <Typography variant="body1">
