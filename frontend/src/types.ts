@@ -65,14 +65,10 @@ export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry;
 
-export type HealthCheckForm = Omit<HealthCheckEntry, "id">;
-export type HospitalEntryForm = Omit<HospitalEntry, "id">;
-export type OccupationalHealthcareForm = Omit<
-  OccupationalHealthcareEntry,
-  "id"
->;
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown
+  ? Omit<T, K>
+  : never;
 
-export type EntryForm =
-  | HealthCheckForm
-  | HospitalEntryForm
-  | OccupationalHealthcareForm;
+// Define Entry without the 'id' property
+export type EntryForm = UnionOmit<Entry, "id">;

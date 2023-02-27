@@ -44,14 +44,11 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
         entries: [...patient.entries, entry],
       };
       setPatient(updatedPatient);
-      setModalOpen(false);
+      closeModal();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         if (e?.response?.data && typeof e?.response?.data === "string") {
-          const message = e.response.data.replace(
-            "Something went wrong. Error: ",
-            ""
-          );
+          const message = e.response.data.replace("Error: ", "");
           console.error(message);
           setError(message);
         } else {
@@ -84,6 +81,7 @@ const PatientPage = ({ patientID, diagnoses }: Props) => {
         modalOpen={modalOpen}
         onSubmit={submitNewEntry}
         error={error}
+        clearError={() => setError(undefined)}
         onClose={closeModal}
         diagnoses={diagnoses}
       />

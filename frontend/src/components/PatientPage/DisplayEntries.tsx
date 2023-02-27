@@ -53,7 +53,7 @@ const DisplayEntries = ({ entries, diagnoses }: Props) => {
           return (
             <ListItem
               key={code}
-              sx={{ display: "list-item", p: "0", ml: "20px" }}
+              sx={{ display: "list-item", paddingY: "0", ml: "20px" }}
             >
               <ListItemText
                 primary={`${code}`}

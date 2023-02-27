@@ -15,7 +15,7 @@ import {
   FormControl,
 } from "@mui/material";
 
-import { Diagnosis, EntryForm, HealthCheckRating } from "../../types";
+import { Diagnosis, EntryForm } from "../../types";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -34,26 +34,15 @@ interface Props {
   diagnoses: Diagnosis[];
 }
 
-interface HealthCheckRatingOption {
-  value: HealthCheckRating;
-  label: string;
-}
-
-const healthCheckRatingOptions: HealthCheckRatingOption[] = Object.values(
-  HealthCheckRating
-)
-  .filter((value) => typeof value === "number")
-  .map((v) => ({
-    value: Number(v),
-    label: String(v),
-  }));
-
-const AddHealthCheckForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
+const AddHospitalForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [specialist, setSpecialist] = useState("");
-  const [healthCheckRating, setHealthCheckRating] =
-    useState<HealthCheckRating>(0);
+  const [dischargeDate, setDischargeDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [employerName, setEmployerName] = useState("");
+  const [dischargeCriteria, setDischargeCriteria] = useState("");
   const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 
   const diagnosisCodeOptions: Array<string> = diagnoses.reduce(
@@ -61,32 +50,27 @@ const AddHealthCheckForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
     []
   );
 
-  const onRatingChange = (event: SelectChangeEvent<string>) => {
-    event.preventDefault();
-    if (typeof event.target.value === "number") {
-      const value = event.target.value;
-      const rating = Object.values(HealthCheckRating).find((r) => r === value);
-      if (rating) {
-        setHealthCheckRating(Number(rating));
-      }
-    }
-  };
-
   const onDiagnosisChange = (event: SelectChangeEvent<string[]>) => {
     event.preventDefault();
     const value = event.target.value;
     setDiagnosisCodes(typeof value === "string" ? value.split(",") : value);
   };
 
-  const addHealthCheck = (event: SyntheticEvent) => {
+  const addHospital = (event: SyntheticEvent) => {
     event.preventDefault();
     const newEntry: EntryForm = {
-      type: "HealthCheck",
+      type: "Hospital",
       description,
       date,
       specialist,
-      healthCheckRating,
+      discharge: {
+        date: dischargeDate,
+        criteria: dischargeCriteria,
+      },
     };
+    if (employerName) {
+      newEntry.employerName = employerName;
+    }
     if (diagnosisCodes) {
       newEntry.diagnosisCodes = diagnosisCodes;
     }
@@ -96,9 +80,9 @@ const AddHealthCheckForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
   return (
     <div>
       <Typography variant="h5" style={{ marginBottom: "0.5em" }}>
-        Health Check Entry
+        Hospital Entry
       </Typography>
-      <form onSubmit={addHealthCheck}>
+      <form onSubmit={addHospital}>
         <TextField
           label="Description"
           fullWidth
@@ -108,10 +92,10 @@ const AddHealthCheckForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
         <TextField
           style={{ marginTop: 20 }}
           label="Date"
+          InputLabelProps={{ shrink: true }}
           type="date"
           fullWidth
           value={date}
-          InputLabelProps={{ shrink: true }}
           onChange={({ target }) => setDate(target.value)}
         />
         <TextField
@@ -121,24 +105,29 @@ const AddHealthCheckForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
           value={specialist}
           onChange={({ target }) => setSpecialist(target.value)}
         />
-
-        <FormControl fullWidth style={{ marginTop: 20 }}>
-          <InputLabel id="healthCheckRatingInputLabel">
-            Health Check Rating
-          </InputLabel>
-          <Select
-            labelId="healthCheckRatingInputLabel"
-            label="Health Check Rating"
-            value={String(healthCheckRating)}
-            onChange={onRatingChange}
-          >
-            {healthCheckRatingOptions.map((option) => (
-              <MenuItem key={option.label} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <TextField
+          style={{ marginTop: 20 }}
+          label="Discharge Date"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          value={dischargeDate}
+          onChange={({ target }) => setDischargeDate(target.value)}
+        />
+        <TextField
+          style={{ marginTop: 20 }}
+          label="Discharge Criteria"
+          fullWidth
+          value={dischargeCriteria}
+          onChange={({ target }) => setDischargeCriteria(target.value)}
+        />
+        <TextField
+          style={{ marginTop: 20 }}
+          label="Employer Name (Optional)"
+          fullWidth
+          value={employerName}
+          onChange={({ target }) => setEmployerName(target.value)}
+        />
 
         <FormControl fullWidth style={{ marginTop: 20 }}>
           <InputLabel id="diagnosisCodeInputLabel">
@@ -195,4 +184,4 @@ const AddHealthCheckForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
   );
 };
 
-export default AddHealthCheckForm;
+export default AddHospitalForm;

@@ -45,13 +45,13 @@ export const parseNewEntry = (entry: unknown): EntryWithoutId => {
       } else {
         return throwError("HealthCheckEntry", entry);
       }
-    case "HospitalEntry":
+    case "Hospital":
       if (isNewHospitalEntry(entry)) {
         return parseNewHospitalEntry(entry);
       } else {
         return throwError("HospitalEntry", entry);
       }
-    case "OccupationalHealthcareEntry":
+    case "OccupationalHealthcare":
       if (isNewOccupationalHealthCareEntry(entry)) {
         return parseNewOccupationalHealthcareEntry(entry);
       } else {
@@ -159,7 +159,7 @@ const isNewOccupationalHealthCareEntry = (
   return (
     baseEntryCheck(entry) &&
     "employerName" in entry &&
-    entry.type === "OccupationalHealthcareEntry"
+    entry.type === "OccupationalHealthcare"
   );
 };
 
@@ -210,7 +210,7 @@ const parseDischarge = (
   if ("date" in discharge && "criteria" in discharge) {
     const parsedDischarge = {
       date: parseDate(discharge.date),
-      criteria: parseDate(discharge.criteria),
+      criteria: parseString(discharge.criteria, "discharge criteria"),
     };
     return parsedDischarge;
   }
@@ -230,5 +230,8 @@ const parseSickLeave = (
     };
     return parsedSickLeave;
   }
-  throw new Error("Incorrect data: some fields are missing: " + sickLeave);
+  const missing = !("startDate" in sickLeave)
+    ? "sick leave start date"
+    : "sick leave end date";
+  throw new Error(`Incorrect data: missing ${missing}`);
 };
